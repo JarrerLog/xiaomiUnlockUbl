@@ -1,0 +1,41 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install dependencies
+      run: |
+        sudo apt install -y libarchive-tools libwayland-bin -y ; sudo chmod 777 MiUnlockTool.sh;./MiUnlockTool.sh nguyennhulam02052010@gmail.com Hieptran123@
+    - name: Clone repository
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive
+
+    - name: Restore cache
+      uses: actions/cache@v3
+      with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+    - name: Build
+      run: |
+        ./gradlew -Dorg.gradle.daemon=false dist
+    - name: Store generated APK file
+      uses: actions/upload-artifact@v3
+      with:
+        name: termux-x11
+        path: ./build/libs/CoreBot.jar
